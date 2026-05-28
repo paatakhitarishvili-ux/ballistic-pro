@@ -595,7 +595,7 @@ async function analyzeImg(dataUrl){
     });
     const data=await resp.json();
     const txt=data.content&&data.content[0]?data.content[0].text:'ამოცნობა ვერ მოხერხდა.';
-    sr.innerHTML=txt.replace(/\n/g,'<br>');
+    sr.innerHTML=txt.split('\n').join('<br>');
     const f=txt.split('\n')[0];
     const nm=f.match(/ᲡᲐᲮᲔᲚᲘ:([^|]+)/);
     const cl=f.match(/ᲙᲐᲚᲘᲑᲠᲘ:([^|]+)/);
@@ -770,8 +770,7 @@ async function send(){
     var rep=d.choices&&d.choices[0]?d.choices[0].message.content:'პასუხი ვერ მივიღე.';
     ty.remove();
     var ad=document.createElement('div');ad.className='ms a';
-    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div>'+rep.replace(/
-/g,'<br>');
+    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div>'+rep.split('\n').join('<br>');
     area.appendChild(ad);
   }catch(e){
     ty.remove();
