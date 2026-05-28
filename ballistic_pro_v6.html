@@ -160,18 +160,57 @@ select:focus,input:focus{border-color:var(--ac2)}
 
     <div class="pg" id="pg-guns">
       <div class="sh">ჩემი იარაღები</div>
-      <div class="ic"><div class="ii ig">🔫</div><div><div class="in-n">Husan Arms MKA 556</div><div class="in-d">ნახ-ავტომატური · AR · 5.56×45mm NATO</div><span class="bdg ba">5.56mm</span><span class="bdg bg">ნახ-ავტო</span></div></div>
-      <div class="ic"><div class="ii ig">🔫</div><div><div class="in-n">Tikka T1X</div><div class="in-d">ბოლტ-აქშენი · .22 LR · Match-Grade</div><span class="bdg ba">.22 LR</span><span class="bdg bb">ბოლტ-აქშ.</span></div></div>
-      <div class="ic"><div class="ii ig">💨</div><div><div class="in-n">Snowpeak T-REX</div><div class="in-d">PCP პნევმატური · 4.5mm · რეგ. საჭ.</div><span class="bdg ba">4.5mm PCP</span><span class="bdg br">რეგ. საჭ.</span></div></div>
-      <div class="hint"><b style="color:var(--ac)">ექსპ:</b> Tikka T1X-ზე → CCI Standard ან Eley Match. Snowpeak T-REX-ზე → JSB Exact 4.52mm.</div>
+      <div id="guns-list"></div>
+      <div class="dv"><span>ახალი იარაღი</span></div>
+      <div class="card">
+        <div class="ct">🔫 იარაღის დამატება</div>
+        <div class="lbl">სახელი</div>
+        <input type="text" id="gun-name" placeholder="მაგ: Tikka T1X">
+        <div class="r2">
+          <div><div class="lbl">კალიბრი</div><input type="text" id="gun-cal" placeholder=".22 LR"></div>
+          <div><div class="lbl">ტიპი</div>
+            <select id="gun-type">
+              <option value="bolt">ბოლტ-აქშენი</option>
+              <option value="semi">ნახ-ავტომატური</option>
+              <option value="pcp">PCP პნევმ.</option>
+              <option value="other">სხვა</option>
+            </select>
+          </div>
+        </div>
+        <button class="svb" onclick="saveGun()">💾 შენახვა</button>
+      </div>
     </div>
 
     <div class="pg" id="pg-opt">
       <div class="sh">ჩემი ოპტიკები</div>
-      <div class="ic"><div class="ii is">🔭</div><div><div class="in-n">Discovery HD GEN II 5-30×56</div><div class="in-d">FFP · 34mm მილი · 0.1 MIL კლიკი · IP67</div><span class="bdg bb">0.1 MIL</span><span class="bdg bg">FFP</span><span class="bdg ba">34mm</span></div></div>
-      <div class="ic"><div class="ii is">🔭</div><div><div class="in-n">Discovery ED-LHT GEN II 3-15×50</div><div class="in-d">FFP · ED მინა · მსუბ. · 34mm · 0.1 MIL</div><span class="bdg bb">0.1 MIL</span><span class="bdg bg">FFP·ED</span></div></div>
-      <div class="ic"><div class="ii is">🔴</div><div><div class="in-n">Vector Optics კოლიმატორი</div><div class="in-d">Red Dot · MOA · ახლო (&lt;100მ)</div><span class="bdg br">Red Dot</span><span class="bdg ba">MOA</span></div></div>
-      <div class="hint"><b style="color:var(--ac)">ექსპ:</b> FFP — ნებ. გადიდებაზე MIL ზუსტია. ED-LHT → Tikka-ზე. HD GEN II → Husan-ზე.</div>
+      <div id="opt-list"></div>
+      <div class="dv"><span>ახალი ოპტიკა</span></div>
+      <div class="card">
+        <div class="ct">🔭 ოპტიკის დამატება</div>
+        <div class="lbl">სახელი</div>
+        <input type="text" id="opt-name" placeholder="მაგ: Discovery HD GEN II 5-30×56">
+        <div class="r2">
+          <div><div class="lbl">კლიკის ტიპი</div>
+            <select id="opt-click-type">
+              <option value="MIL">MIL (0.1)</option>
+              <option value="MOA">MOA (1/4)</option>
+              <option value="MOA8">MOA (1/8)</option>
+            </select>
+          </div>
+          <div><div class="lbl">კლიკის ზომა</div><input type="number" id="opt-click-val" placeholder="0.1" step="0.001" value="0.1"></div>
+        </div>
+        <div class="r2">
+          <div><div class="lbl">ტიპი</div>
+            <select id="opt-type">
+              <option value="FFP">FFP (პირ. ფოკ.)</option>
+              <option value="SFP">SFP (მეორ. ფოკ.)</option>
+              <option value="redot">Red Dot</option>
+            </select>
+          </div>
+          <div><div class="lbl">სიმაღლე (მმ)</div><input type="number" id="opt-height" placeholder="40"></div>
+        </div>
+        <button class="svb" onclick="saveOpt()">💾 შენახვა</button>
+      </div>
     </div>
 
     <div class="pg" id="pg-ammo">
@@ -279,17 +318,114 @@ select:focus,input:focus{border-color:var(--ac2)}
 </div>
 
 <script>
-const SC={
-  hd:{n:'Discovery HD 5-30x56',c:0.1,t:'MIL'},
-  ed:{n:'Discovery ED-LHT 3-15x50',c:0.1,t:'MIL'},
-  vec:{n:'Vector Optics Red Dot',c:0.5,t:'MOA'}
+// Static defaults kept for backward compat
+const GD_DEFAULT={husan:{w:55,v:920,b:0.225},tikka:{w:40,v:335,b:0.14},snow:{w:8.44,v:200,b:0.013}};
+
+// Dynamic guns list
+let guns=[
+  {id:'husan',name:'Husan Arms MKA 556',cal:'5.56×45mm',type:'ნახ-ავტო'},
+  {id:'tikka',name:'Tikka T1X',cal:'.22 LR',type:'ბოლტ-აქშენი'},
+  {id:'snow',name:'Snowpeak T-REX',cal:'4.5mm PCP',type:'PCP პნევმ.'}
+];
+
+// Dynamic optics list
+let opts=[
+  {id:'hd',name:'Discovery HD GEN II 5-30×56',clickType:'MIL',clickVal:0.1,type:'FFP',height:42},
+  {id:'ed',name:'Discovery ED-LHT GEN II 3-15×50',clickType:'MIL',clickVal:0.1,type:'FFP',height:40},
+  {id:'vec',name:'Vector Optics კოლიმ.',clickType:'MOA',clickVal:0.5,type:'Red Dot',height:32}
+];
+
+const SH_MAP_DEFAULT={
+  'husan-hd':46,'husan-ed':44,'husan-vec':35,
+  'tikka-hd':42,'tikka-ed':40,'tikka-vec':32,
+  'snow-hd':40,'snow-ed':38,'snow-vec':30,'':38
 };
-const GD={
-  husan:{w:55,v:920,b:0.225,s:38},
-  tikka:{w:40,v:335,b:0.14,s:32},
-  snow:{w:8.44,v:200,b:0.013,s:35}
-};
-const SH_MAP={
+
+function getSC(id){const o=opts.find(x=>x.id===id);return o?{n:o.name,c:o.clickVal,t:o.clickType}:null;}
+
+function renderGunsList(){
+  const list=document.getElementById('guns-list');if(!list)return;
+  list.innerHTML='';
+  const icons={bolt:'🔫',semi:'🔫',pcp:'💨',other:'🔫'};
+  guns.forEach((g,i)=>{
+    const d=document.createElement('div');d.className='ic';
+    d.innerHTML='<div class="ii ig">'+(icons[g.type]||'🔫')+'</div>'+
+      '<div style="flex:1"><div class="in-n">'+g.name+'</div><div class="in-d">'+g.cal+' · '+g.type+'</div></div>'+
+      (i>=3?'<button class="ai-del" onclick="delGun('+i+')"><i class="ti ti-trash"></i></button>':'');
+    list.appendChild(d);
+  });
+}
+
+function saveGun(){
+  const name=document.getElementById('gun-name').value.trim();
+  const cal=document.getElementById('gun-cal').value.trim();
+  const type=document.getElementById('gun-type').value;
+  if(!name||!cal){alert('სახელი და კალიბრი შეიყვანე!');return;}
+  const id='gun_'+Date.now();
+  guns.push({id,name,cal,type});
+  renderGunsList();
+  refreshGunSelects();
+  document.getElementById('gun-name').value='';
+  document.getElementById('gun-cal').value='';
+  alert('✅ იარაღი დაემატა!');
+}
+
+function delGun(i){
+  if(i<3){alert('საბაზისო იარაღის წაშლა არ შეიძლება');return;}
+  guns.splice(i,1);renderGunsList();refreshGunSelects();
+}
+
+function refreshGunSelects(){
+  ['sg','zcal-gun'].forEach(sid=>{
+    const s=document.getElementById(sid);if(!s)return;
+    const cur=s.value;
+    s.innerHTML='<option value="">— აირჩიე —</option>';
+    guns.forEach(g=>{const o=document.createElement('option');o.value=g.id;o.textContent=g.name+' · '+g.cal;s.appendChild(o);});
+    s.value=cur;
+  });
+}
+
+function renderOptsList(){
+  const list=document.getElementById('opt-list');if(!list)return;
+  list.innerHTML='';
+  opts.forEach((o,i)=>{
+    const d=document.createElement('div');d.className='ic';
+    d.innerHTML='<div class="ii is">'+(o.type==='Red Dot'?'🔴':'🔭')+'</div>'+
+      '<div style="flex:1"><div class="in-n">'+o.name+'</div><div class="in-d">'+o.type+' · '+o.clickType+' · '+o.clickVal+'/კლ · '+o.height+'მმ</div></div>'+
+      (i>=3?'<button class="ai-del" onclick="delOpt('+i+')"><i class="ti ti-trash"></i></button>':'');
+    list.appendChild(d);
+  });
+}
+
+function saveOpt(){
+  const name=document.getElementById('opt-name').value.trim();
+  const ct=document.getElementById('opt-click-type').value;
+  const cv=parseFloat(document.getElementById('opt-click-val').value)||0.1;
+  const ot=document.getElementById('opt-type').value;
+  const h=parseFloat(document.getElementById('opt-height').value)||38;
+  if(!name){alert('სახელი შეიყვანე!');return;}
+  const id='opt_'+Date.now();
+  opts.push({id,name,clickType:ct,clickVal:cv,type:ot,height:h});
+  renderOptsList();refreshOptSelects();
+  document.getElementById('opt-name').value='';
+  alert('✅ ოპტიკა დაემატა!');
+}
+
+function delOpt(i){
+  if(i<3){alert('საბაზისო ოპტიკის წაშლა არ შეიძლება');return;}
+  opts.splice(i,1);renderOptsList();refreshOptSelects();
+}
+
+function refreshOptSelects(){
+  ['ss','zcal-scope'].forEach(sid=>{
+    const s=document.getElementById(sid);if(!s)return;
+    const cur=s.value;
+    s.innerHTML='<option value="">— აირჩიე —</option>';
+    opts.forEach(o=>{const el=document.createElement('option');el.value=o.id;el.textContent=o.name+' · '+o.clickVal+o.clickType;s.appendChild(el);});
+    s.value=cur;
+  });
+}
+const SH_MAP_UNUSED={
   'husan-hd':46,'husan-ed':44,'husan-vec':35,
   'tikka-hd':42,'tikka-ed':40,'tikka-vec':32,
   'snow-hd':40,'snow-ed':38,'snow-vec':30,
@@ -330,8 +466,8 @@ function updateScopeHeight(){
   if(shManual)return;
   const gun=document.getElementById('sg').value;
   const scope=document.getElementById('ss').value;
-  const key=gun&&scope?gun+'-'+scope:'';
-  const h=SH_MAP[key]||SH_MAP[''];
+  const o=opts.find(x=>x.id===scope);
+  const h=o?o.height:(SH_MAP_DEFAULT[gun+'-'+scope]||38);
   if(gun&&scope){
     document.getElementById('osh').value=h;
     document.getElementById('sh-auto').textContent='(ავტო)';
@@ -348,12 +484,13 @@ function go(id,btn){
 }
 
 function onGun(){
-  const g=GD[document.getElementById('sg').value];
-  if(!g)return;
-  if(useGrain)document.getElementById('bw').value=g.w;
-  else document.getElementById('bw').value=(g.w*0.0648).toFixed(3);
-  document.getElementById('mv').value=g.v;
-  document.getElementById('bc').value=g.b;
+  const gid=document.getElementById('sg').value;
+  const gd=GD_DEFAULT[gid];
+  if(!gd)return;
+  if(useGrain)document.getElementById('bw').value=gd.w;
+  else document.getElementById('bw').value=(gd.w*0.0648).toFixed(3);
+  document.getElementById('mv').value=gd.v;
+  document.getElementById('bc').value=gd.b;
   shManual=false;
   updateScopeHeight();
 }
@@ -498,7 +635,7 @@ function calc(){
   if(!td){alert('სამიზნე მანძილი შეიყვანე!');return;}
   const ws=parseFloat(document.getElementById('ws').value)||0;
   const wa=parseFloat(document.getElementById('wa').value)||90;
-  const sc=SC[sk];
+  const sc=getSC(sk)||{n:'ოპტიკა',c:0.1,t:'MIL'};
   const gunKey=document.getElementById('sg').value;
   const ammoIdx=document.getElementById('sa').value;
 
@@ -533,7 +670,7 @@ function calc(){
   // ქარი
   const G2=9.81,shM2=sh/1000,wKg2=w*0.0000648,A2=Math.PI*Math.pow(0.00225,2),rho2=1.225;
   const st2=sim(v,bc,wKg2,A2,rho2,G2,td,shM2);
-  const sc2=SC[sk];
+  const sc2=getSC(sk)||{n:'ოპტიკა',c:0.1,t:'MIL'};
   let clickSizeMm2=sc2.t==='MIL'?sc2.c*td*1000*0.001:sc2.c*(Math.PI/180/60)*td*1000;
   const we=ws*Math.sin(wa*Math.PI/180);
   const wDriftMm=0.5*we*(st2.time-td/v)*1000;
@@ -594,6 +731,10 @@ async function send(){
 }
 
 window.addEventListener('DOMContentLoaded',function(){
+  refreshGunSelects();
+  refreshOptSelects();
+  renderGunsList();
+  renderOptsList();
   refSel();
   renderAmmos();
   refZeroAmmo();
