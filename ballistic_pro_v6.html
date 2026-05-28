@@ -726,7 +726,7 @@ async function send(){
     const rep=d.content&&d.content[0]?d.content[0].text:'პასუხი ვერ მივიღე.';
     ty.remove();
     const ad=document.createElement('div');ad.className='ms a';
-    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div>'+rep.replace(/\n/g,'<br>');
+    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div>'+rep.split('\n').join('<br>');
     area.appendChild(ad);
   }catch(err){
     ty.remove();
