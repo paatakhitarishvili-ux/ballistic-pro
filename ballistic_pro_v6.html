@@ -299,6 +299,13 @@ select:focus,input:focus{border-color:var(--ac2)}
       <div class="ca" id="ca">
         <div class="ms a"><div class="an">🎯 ბალისტიკის ექსპერტი</div>გამარჯობა! ვარ სამიზნე სროლის ექსპერტი 10 წლიანი გამოცდილებით, სანადირო და სპორტული მიმართულებით. რა გაინტერესებს?</div>
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+        <button class="toggle-btn" onclick="setQ('რომელი ვაზნა გამოვიყენო Tikka T1X-ზე?')">Tikka ვაზნა</button>
+        <button class="toggle-btn" onclick="setQ('Discovery HD-ზე ring-ის სიმაღლე?')">Ring სიმ.</button>
+        <button class="toggle-btn" onclick="setQ('T-REX-ზე JSB თუ H&N?')">T-REX პელეტი</button>
+        <button class="toggle-btn" onclick="setQ('MOA და MIL სხვაობა?')">MOA vs MIL</button>
+        <button class="toggle-btn" onclick="setQ('FFP და SFP სხვაობა?')">FFP vs SFP</button>
+      </div>
       <div class="ci-row">
         <input type="text" id="ci" placeholder="შეკითხვა ექსპერტს..." onkeydown="if(event.key==='Enter')send()">
         <button class="sb" onclick="send()">↑</button>
@@ -725,6 +732,51 @@ async function send(){
     ty.remove();
     const ad=document.createElement('div');ad.className='ms a';
     ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div><span style="color:#f87171">შეცდომა: '+err.message+'</span>';
+    area.appendChild(ad);
+  }
+  area.scrollTop=area.scrollHeight;
+}
+
+var PROXY='https://ballistic-proxy.paata-khitarishvili.workers.dev/';
+
+function setQ(txt){
+  var el=document.getElementById('ci');
+  if(el){el.value=txt;el.focus();}
+}
+
+async function send(){
+  var inp=document.getElementById('ci');
+  var txt=inp.value.trim();
+  if(!txt)return;
+  inp.value='';
+  var area=document.getElementById('ca');
+  var ud=document.createElement('div');ud.className='ms u';ud.textContent=txt;area.appendChild(ud);
+  var ty=document.createElement('div');ty.className='ty';ty.innerHTML='<span></span><span></span><span></span>';
+  area.appendChild(ty);area.scrollTop=area.scrollHeight;
+  var gunsCtx=guns.map(function(g){return g.name+' ('+g.cal+')';}).join(', ');
+  var optCtx=opts.map(function(o){return o.name+' ('+o.clickVal+o.clickType+')';}).join(', ');
+  var ammoCtx=ammos.length?ammos.map(function(a){return a.n+' ('+a.c+','+a.w+(a.wGram?'გრ':'gr')+','+a.v+'m/s)';}).join(', '):'';
+  var sys='შენ ხარ სამიზნე სროლის ექსპერტი 10 წლიანი გამოცდილებით, სანადირო და სპორტული მიმართულებით. პასუხობ ქართულად, მოკლედ და კონკრეტულად. მომხმარებლის იარაღები: '+gunsCtx+'. ოპტიკები: '+optCtx+'.'+(ammoCtx?' ვაზნები: '+ammoCtx+'.':'');
+  try{
+    var r=await fetch(PROXY,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[
+        {role:'system',content:sys},
+        {role:'user',content:txt}
+      ]})
+    });
+    var d=await r.json();
+    var rep=d.choices&&d.choices[0]?d.choices[0].message.content:'პასუხი ვერ მივიღე.';
+    ty.remove();
+    var ad=document.createElement('div');ad.className='ms a';
+    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div>'+rep.replace(/
+/g,'<br>');
+    area.appendChild(ad);
+  }catch(e){
+    ty.remove();
+    var ad=document.createElement('div');ad.className='ms a';
+    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div><span style="color:var(--rd)">შეცდომა: '+e.message+'</span>';
     area.appendChild(ad);
   }
   area.scrollTop=area.scrollHeight;
