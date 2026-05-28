@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ballistic Pro 🎯</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0c0f;--bg2:#111418;--bg3:#181d23;--bg4:#1e242c;--brd:#2a3040;--brd2:#3a4455;--tx:#e8edf5;--tx2:#8a96a8;--tx3:#4a5568;--ac:#c8a96e;--ac2:#a07840;--gn:#4ade80;--rd:#f87171;--bl:#60a5fa;--r:10px;--r2:6px}
+body{background:var(--bg);color:var(--tx);font-family:'Courier New',monospace;min-height:100vh}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.hdr{background:var(--bg2);border-bottom:1px solid var(--brd);padding:12px 16px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100}
+.hdr-ico{width:36px;height:36px;background:#a07840;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.hdr-t{font-size:15px;font-weight:700;letter-spacing:1px;color:var(--ac)}
+.hdr-s{font-size:9px;color:var(--tx2)}
+.content{flex:1;overflow-y:auto;padding-bottom:75px}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--bg2);border-top:1px solid var(--brd);display:flex;z-index:100}
+.nb{flex:1;padding:9px 2px;background:none;border:none;color:var(--tx2);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:8px;letter-spacing:.4px;font-family:inherit}
+.nb.on{color:var(--ac)}
+.nb i{font-size:20px}
+.nb.on i{color:var(--ac)}
+.pg{display:none;padding:14px}
+.pg.on{display:block}
+.card{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.ct{font-size:11px;letter-spacing:1.5px;color:var(--ac);margin-bottom:12px;font-weight:700}
+.lbl{font-size:11px;color:var(--tx2);margin-bottom:5px;letter-spacing:.5px}
+select,input[type=text],input[type=number]{width:100%;background:var(--bg4);border:1px solid var(--brd);border-radius:var(--r2);color:var(--tx);padding:10px 12px;font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;-webkit-appearance:none}
+select:focus,input:focus{border-color:var(--ac2)}
+.r2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.toggle-row{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.toggle-btn{background:var(--bg4);border:1px solid var(--brd);border-radius:20px;color:var(--tx2);font-family:inherit;font-size:11px;padding:4px 12px;cursor:pointer;transition:.15s}
+.toggle-btn.on{background:var(--ac2);border-color:var(--ac2);color:#000;font-weight:700}
+.scope-hint{font-size:10px;color:var(--tx3);margin-top:-6px;margin-bottom:8px}
+.cbtn{width:100%;background:var(--ac2);border:none;border-radius:var(--r2);color:#000;padding:13px;font-size:14px;font-weight:700;letter-spacing:1px;cursor:pointer;font-family:inherit;margin-top:6px}
+.cbtn:active{opacity:.8;transform:scale(.98)}
+.rb{background:var(--bg4);border:1px solid var(--brd2);border-radius:var(--r);padding:16px;margin-top:8px}
+.rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.rc{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r2);padding:12px;text-align:center}
+.rl{font-size:9px;letter-spacing:1px;color:var(--tx2);margin-bottom:5px}
+.rv{font-size:24px;font-weight:700}
+.rv.up{color:var(--gn)}
+.rv.dn{color:var(--rd)}
+.rv.nt{color:var(--ac)}
+.ru{font-size:9px;color:var(--tx2);margin-top:3px}
+.hint{background:var(--bg4);border-left:2px solid var(--ac);border-radius:0 var(--r2) var(--r2) 0;padding:10px 12px;font-size:12px;color:var(--tx2);line-height:1.6;margin-top:10px}
+.ic{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:13px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start}
+.ii{width:40px;height:40px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.ig{background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.3)}
+.is{background:rgba(96,165,250,.12);border:1px solid rgba(96,165,250,.3)}
+.in-n{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:3px}
+.in-d{font-size:11px;color:var(--tx2);line-height:1.6}
+.bdg{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;margin-top:4px;margin-right:3px}
+.ba{background:rgba(200,169,110,.15);color:var(--ac);border:1px solid rgba(200,169,110,.3)}
+.bb{background:rgba(96,165,250,.12);color:var(--bl);border:1px solid rgba(96,165,250,.3)}
+.bg{background:rgba(74,222,128,.1);color:var(--gn);border:1px solid rgba(74,222,128,.3)}
+.br{background:rgba(248,113,113,.1);color:var(--rd);border:1px solid rgba(248,113,113,.3)}
+.ca{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;min-height:350px}
+.ms{max-width:88%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.7}
+.ms.u{align-self:flex-end;background:var(--ac2);color:#000;border-radius:12px 12px 2px 12px}
+.ms.a{align-self:flex-start;background:var(--bg3);border:1px solid var(--brd);color:var(--tx);border-radius:2px 12px 12px 12px}
+.an{font-size:9px;letter-spacing:.5px;color:var(--ac);margin-bottom:4px;font-weight:700}
+.ci-row{display:flex;gap:8px;align-items:center}
+.ci-row input{margin-bottom:0;flex:1}
+.sb{background:var(--ac2);border:none;border-radius:var(--r2);color:#000;padding:10px 16px;cursor:pointer;font-size:18px;flex-shrink:0;height:46px}
+.ty{display:flex;gap:4px;padding:10px 14px;background:var(--bg3);border:1px solid var(--brd);border-radius:2px 12px 12px 12px;width:fit-content}
+.ty span{width:6px;height:6px;background:var(--ac);border-radius:50%;animation:bl 1s infinite}
+.ty span:nth-child(2){animation-delay:.2s}
+.ty span:nth-child(3){animation-delay:.4s}
+@keyframes bl{0%,80%,100%{opacity:.2}40%{opacity:1}}
+.sh{font-size:10px;letter-spacing:2px;color:var(--tx3);padding:8px 0;font-weight:700}
+.ub{width:100%;background:var(--bg3);border:2px dashed var(--brd2);border-radius:var(--r);color:var(--tx);padding:18px 14px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:12px}
+.ub i{font-size:28px;color:var(--ac)}
+.pv{width:100%;border-radius:var(--r);overflow:hidden;background:#000;margin-bottom:10px;display:none}
+.pv img{width:100%;display:block;max-height:240px;object-fit:cover}
+.sc{background:var(--bg3);border:1px solid var(--brd2);border-radius:var(--r);padding:14px;margin-bottom:12px;display:none}
+.sc-t{font-size:10px;letter-spacing:1.5px;color:var(--ac);margin-bottom:8px;font-weight:700}
+.sc-b{font-size:12px;color:var(--tx2);line-height:1.7}
+.dv{display:flex;align-items:center;gap:10px;margin:14px 0}
+.dv span{font-size:10px;color:var(--tx3);letter-spacing:1px;white-space:nowrap}
+.dv::before,.dv::after{content:'';flex:1;height:1px;background:var(--brd)}
+.svb{width:100%;background:rgba(200,169,110,.12);border:1px solid rgba(200,169,110,.35);border-radius:var(--r2);color:var(--ac);padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;letter-spacing:.5px}
+.svb:active{opacity:.8}
+.ai-item{background:var(--bg3);border:1px solid var(--brd);border-radius:var(--r);padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.ai-info{flex:1}
+.ai-n{font-size:13px;font-weight:700;color:var(--tx)}
+.ai-d{font-size:10px;color:var(--tx2);margin-top:2px}
+.ai-del{background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;padding:4px}
+.ai-del:hover{color:var(--rd)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="hdr-ico">🎯</div>
+    <div><div class="hdr-t">BALLISTIC PRO</div><div class="hdr-s">სამიზნე · სპორტი · სიზუსტე</div></div>
+  </div>
+
+  <div class="content">
+
+    <div class="pg on" id="pg-calc">
+      <div class="card">
+        <div class="ct">🔫 იარაღი და ოპტიკა</div>
+        <div class="lbl">იარაღი</div>
+        <select id="sg" onchange="onGun()">
+          <option value="">— აირჩიე იარაღი —</option>
+          <option value="husan">Husan Arms MKA 556 · 5.56×45mm</option>
+          <option value="tikka">Tikka T1X · .22 LR</option>
+          <option value="snow">Snowpeak T-REX · 4.5mm PCP</option>
+        </select>
+        <div class="lbl">ოპტიკა</div>
+        <select id="ss" onchange="onScope()">
+          <option value="">— აირჩიე ოპტიკა —</option>
+          <option value="hd">Discovery HD GEN II 5-30×56 · 0.1 MIL</option>
+          <option value="ed">Discovery ED-LHT GEN II 3-15×50 · 0.1 MIL</option>
+          <option value="vec">Vector Optics კოლიმ. · MOA</option>
+        </select>
+        <div class="lbl">ვაზნა</div>
+        <select id="sa" onchange="onAmmo()"><option value="">— ვაზნა გვ-ზე დაამატე —</option></select>
+      </div>
+      <div class="card">
+        <div class="ct">🧪 ვაზნის პარამეტრები</div>
+        <div class="toggle-row">
+          <span class="lbl" style="margin-bottom:0">წონა:</span>
+          <button class="toggle-btn on" id="btn-gr" onclick="setUnit('gr')">grain</button>
+          <button class="toggle-btn" id="btn-g" onclick="setUnit('g')">გრ</button>
+        </div>
+        <div class="r2">
+          <div><div class="lbl" id="lbl-wt">წონა (grain)</div><input type="number" id="bw" placeholder="55"></div>
+          <div><div class="lbl">სიჩქარე (m/s)</div><input type="number" id="mv" placeholder="920"></div>
+        </div>
+        <div class="r2">
+          <div><div class="lbl">BC კოეფ. (G1)</div><input type="number" id="bc" placeholder="0.225" step="0.001"></div>
+          <div><div class="lbl">ოპტ. სიმ. (მმ) <span id="sh-auto" style="color:var(--ac);font-size:9px"></span></div><input type="number" id="osh" placeholder="38" oninput="shManual=true"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ct">📐 მანძილი და ქარი</div>
+        <div class="r2">
+          <div><div class="lbl">ზერო მანძილი (მ)</div><input type="number" id="zd" value="50"></div>
+          <div><div class="lbl">სამიზნე მანძ. (მ)</div><input type="number" id="td" placeholder="25"></div>
+        </div>
+        <div class="r2">
+          <div><div class="lbl">ქარი (მ/წმ)</div><input type="number" id="ws" value="0" step="0.5"></div>
+          <div><div class="lbl">ქარის კუთხე (°)</div><input type="number" id="wa" value="90"></div>
+        </div>
+      </div>
+      <button class="cbtn" onclick="calc()">⚡ გამოითვალე კორექცია</button>
+      <div id="res" style="display:none;margin-top:4px">
+        <div class="rb">
+          <div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:10px" id="rs"></div>
+          <div class="rg">
+            <div class="rc"><div class="rl">↕ ᲕᲔᲠᲢᲘᲙᲐᲚᲘ</div><div class="rv" id="vc">—</div><div class="ru" id="vd"></div></div>
+            <div class="rc"><div class="rl">↔ ჰორიზ.</div><div class="rv" id="hc">—</div><div class="ru" id="hd"></div></div>
+          </div>
+          <div class="hint" id="rh"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-guns">
+      <div class="sh">ჩემი იარაღები</div>
+      <div class="ic"><div class="ii ig">🔫</div><div><div class="in-n">Husan Arms MKA 556</div><div class="in-d">ნახ-ავტომატური · AR · 5.56×45mm NATO</div><span class="bdg ba">5.56mm</span><span class="bdg bg">ნახ-ავტო</span></div></div>
+      <div class="ic"><div class="ii ig">🔫</div><div><div class="in-n">Tikka T1X</div><div class="in-d">ბოლტ-აქშენი · .22 LR · Match-Grade</div><span class="bdg ba">.22 LR</span><span class="bdg bb">ბოლტ-აქშ.</span></div></div>
+      <div class="ic"><div class="ii ig">💨</div><div><div class="in-n">Snowpeak T-REX</div><div class="in-d">PCP პნევმატური · 4.5mm · რეგ. საჭ.</div><span class="bdg ba">4.5mm PCP</span><span class="bdg br">რეგ. საჭ.</span></div></div>
+      <div class="hint"><b style="color:var(--ac)">ექსპ:</b> Tikka T1X-ზე → CCI Standard ან Eley Match. Snowpeak T-REX-ზე → JSB Exact 4.52mm.</div>
+    </div>
+
+    <div class="pg" id="pg-opt">
+      <div class="sh">ჩემი ოპტიკები</div>
+      <div class="ic"><div class="ii is">🔭</div><div><div class="in-n">Discovery HD GEN II 5-30×56</div><div class="in-d">FFP · 34mm მილი · 0.1 MIL კლიკი · IP67</div><span class="bdg bb">0.1 MIL</span><span class="bdg bg">FFP</span><span class="bdg ba">34mm</span></div></div>
+      <div class="ic"><div class="ii is">🔭</div><div><div class="in-n">Discovery ED-LHT GEN II 3-15×50</div><div class="in-d">FFP · ED მინა · მსუბ. · 34mm · 0.1 MIL</div><span class="bdg bb">0.1 MIL</span><span class="bdg bg">FFP·ED</span></div></div>
+      <div class="ic"><div class="ii is">🔴</div><div><div class="in-n">Vector Optics კოლიმატორი</div><div class="in-d">Red Dot · MOA · ახლო (&lt;100მ)</div><span class="bdg br">Red Dot</span><span class="bdg ba">MOA</span></div></div>
+      <div class="hint"><b style="color:var(--ac)">ექსპ:</b> FFP — ნებ. გადიდებაზე MIL ზუსტია. ED-LHT → Tikka-ზე. HD GEN II → Husan-ზე.</div>
+    </div>
+
+    <div class="pg" id="pg-ammo">
+      <div class="sh">ვაზნის დამატება</div>
+      <label class="ub">
+        <i class="ti ti-upload"></i>
+        <div style="text-align:left"><div style="font-size:13px;font-weight:700">ფოტოს ატვირთვა</div><div style="font-size:10px;color:var(--tx2);margin-top:2px">გალერეიდან — AI ავტომ. შეავსებს ველებს</div></div>
+        <input type="file" id="fu" accept="image/*" style="display:none" onchange="onFile(event)">
+      </label>
+      <div class="pv" id="pv"><img id="pi" alt="ვაზნის ფოტო"></div>
+      <div class="sc" id="sc"><div class="sc-t">🤖 AI სკანირება</div><div class="sc-b" id="sr">...</div></div>
+      <div class="dv"><span>ან ხელით შეყვანა</span></div>
+      <div class="card">
+        <div class="ct">✍️ ვაზნის პარამეტრები</div>
+        <div class="lbl">სახელი / მარკა</div>
+        <input type="text" id="an" placeholder="მაგ: CCI Standard .22 LR">
+        <div class="lbl">კალიბრი</div>
+        <input type="text" id="acal" placeholder="მაგ: .22 LR">
+        <div class="r2">
+          <div><div class="lbl">წონა (grain)</div><input type="number" id="aw" placeholder="40"></div>
+          <div><div class="lbl">სიჩქარე (m/s)</div><input type="number" id="av" placeholder="335"></div>
+        </div>
+        <div class="r2">
+          <div><div class="lbl">BC კოეფ. (G1)</div><input type="number" id="ab" placeholder="0.14" step="0.001"></div>
+          <div><div class="lbl">ტიპი</div>
+            <select id="at">
+              <option value="target">სამიზნე (Target)</option>
+              <option value="hunting">სანადირო</option>
+              <option value="fmj">FMJ / სპორტ.</option>
+              <option value="pellet">Pellet (პნევმ.)</option>
+            </select>
+          </div>
+        </div>
+        <button class="svb" onclick="saveAmmo()">💾 შენახვა და კალკ-ში დამატება</button>
+      </div>
+      <div id="al-sec" style="display:none">
+        <div class="sh">შენახული ვაზნები</div>
+        <div id="al"></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-zero">
+      <div class="sh">რეალური კალიბრაცია</div>
+
+      <div class="card">
+        <div class="ct">🎯 კომბინაციის არჩევა</div>
+        <div class="lbl">იარაღი</div>
+        <select id="zcal-gun">
+          <option value="">— აირჩიე —</option>
+          <option value="husan">Husan Arms MKA 556</option>
+          <option value="tikka">Tikka T1X</option>
+          <option value="snow">Snowpeak T-REX</option>
+        </select>
+        <div class="lbl">ოპტიკა</div>
+        <select id="zcal-scope">
+          <option value="">— აირჩიე —</option>
+          <option value="hd">Discovery HD GEN II 5-30×56</option>
+          <option value="ed">Discovery ED-LHT 3-15×50</option>
+          <option value="vec">Vector Optics კოლიმ.</option>
+        </select>
+        <div class="lbl">ვაზნა</div>
+        <select id="zcal-ammo">
+          <option value="">— აირჩიე —</option>
+        </select>
+        <div class="lbl">ზერო მანძილი (მ)</div>
+        <input type="number" id="zcal-zero" value="50" placeholder="50">
+      </div>
+
+      <div class="card">
+        <div class="ct">📊 რეალური კლიკები</div>
+        <div style="font-size:11px;color:var(--tx2);margin-bottom:12px;line-height:1.6">შეიყვანე მანძილი და რამდენი კლიკი გააკეთე რომ მიზანში მოხვდი. მინ. 2 წერტილი საჭიროა.</div>
+        <div id="zpoints"></div>
+        <button class="svb" style="margin-top:8px" onclick="addZPoint()">+ წერტილის დამატება</button>
+      </div>
+
+      <button class="cbtn" onclick="saveZeroData()">💾 კალიბრაციის შენახვა</button>
+
+      <div id="zcal-saved" style="display:none;margin-top:12px">
+        <div class="sh">შენახული კალიბრაციები</div>
+        <div id="zcal-list"></div>
+      </div>
+    </div>
+
+    <div class="pg" id="pg-chat">
+      <div class="sh">ექსპერტი · 10 წ. გამოცდილება</div>
+      <div class="ca" id="ca">
+        <div class="ms a"><div class="an">🎯 ბალისტიკის ექსპერტი</div>გამარჯობა! ვარ სამიზნე სროლის ექსპერტი 10 წლიანი გამოცდილებით, სანადირო და სპორტული მიმართულებით. რა გაინტერესებს?</div>
+      </div>
+      <div class="ci-row">
+        <input type="text" id="ci" placeholder="შეკითხვა ექსპერტს..." onkeydown="if(event.key==='Enter')send()">
+        <button class="sb" onclick="send()">↑</button>
+      </div>
+    </div>
+
+  </div>
+
+  <nav class="nav">
+    <button class="nb on" onclick="go('calc',this)"><i class="ti ti-target"></i>ᲙᲐᲚᲙ.</button>
+    <button class="nb" onclick="go('guns',this)"><i class="ti ti-tools"></i>ᲘᲐᲠᲐᲦᲘ</button>
+    <button class="nb" onclick="go('opt',this)"><i class="ti ti-telescope"></i>ᲝᲞᲢᲘᲙᲐ</button>
+    <button class="nb" onclick="go('ammo',this)"><i class="ti ti-circle-dot"></i>ᲕᲐᲖᲜᲐ</button>
+    <button class="nb" onclick="go('zero',this)"><i class="ti ti-adjustments"></i>ზერო</button>
+    <button class="nb" onclick="go('chat',this)"><i class="ti ti-message-2"></i>ᲔᲥᲡᲞ.</button>
+  </nav>
+</div>
+
+<script>
+const SC={
+  hd:{n:'Discovery HD 5-30x56',c:0.1,t:'MIL'},
+  ed:{n:'Discovery ED-LHT 3-15x50',c:0.1,t:'MIL'},
+  vec:{n:'Vector Optics Red Dot',c:0.5,t:'MOA'}
+};
+const GD={
+  husan:{w:55,v:920,b:0.225,s:38},
+  tikka:{w:40,v:335,b:0.14,s:32},
+  snow:{w:8.44,v:200,b:0.013,s:35}
+};
+const SH_MAP={
+  'husan-hd':46,'husan-ed':44,'husan-vec':35,
+  'tikka-hd':42,'tikka-ed':40,'tikka-vec':32,
+  'snow-hd':40,'snow-ed':38,'snow-vec':30,
+  '':38
+};
+let ammos=[
+  {n:'T-Rex Pellet',c:'4.5mm',w:0.65,wGram:true,v:160,b:0.047,t:'pellet'},
+  {n:'ELEY Sport 22LR',c:'.22 LR',w:40,wGram:false,v:318,b:0.122,t:'target'}
+];
+let useGrain=true;
+let shManual=false;
+
+function setUnit(u){
+  const val=parseFloat(document.getElementById('bw').value)||0;
+  if(u==='g'&&useGrain){
+    useGrain=false;
+    document.getElementById('btn-gr').classList.remove('on');
+    document.getElementById('btn-g').classList.add('on');
+    document.getElementById('lbl-wt').textContent='წონა (გრ)';
+    if(val>0)document.getElementById('bw').value=(val*0.0648).toFixed(3);
+    else document.getElementById('bw').placeholder='3.56';
+  }else if(u==='gr'&&!useGrain){
+    useGrain=true;
+    document.getElementById('btn-gr').classList.add('on');
+    document.getElementById('btn-g').classList.remove('on');
+    document.getElementById('lbl-wt').textContent='წონა (grain)';
+    if(val>0)document.getElementById('bw').value=(val*15.4324).toFixed(1);
+    else document.getElementById('bw').placeholder='55';
+  }
+}
+
+function getWeightGrain(){
+  const val=parseFloat(document.getElementById('bw').value)||0;
+  return useGrain?val:val*15.4324;
+}
+
+function updateScopeHeight(){
+  if(shManual)return;
+  const gun=document.getElementById('sg').value;
+  const scope=document.getElementById('ss').value;
+  const key=gun&&scope?gun+'-'+scope:'';
+  const h=SH_MAP[key]||SH_MAP[''];
+  if(gun&&scope){
+    document.getElementById('osh').value=h;
+    document.getElementById('sh-auto').textContent='(ავტო)';
+  }else{
+    document.getElementById('sh-auto').textContent='';
+  }
+}
+
+function go(id,btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+function onGun(){
+  const g=GD[document.getElementById('sg').value];
+  if(!g)return;
+  if(useGrain)document.getElementById('bw').value=g.w;
+  else document.getElementById('bw').value=(g.w*0.0648).toFixed(3);
+  document.getElementById('mv').value=g.v;
+  document.getElementById('bc').value=g.b;
+  shManual=false;
+  updateScopeHeight();
+}
+
+function onScope(){
+  shManual=false;
+  updateScopeHeight();
+}
+
+function onAmmo(){
+  const i=document.getElementById('sa').value;
+  if(i===''||!ammos[i])return;
+  const a=ammos[i];
+  // ვაზნის წონა grain-ში ინახება, ერთეულს ვითვალისწინებთ
+  const wGr=a.wGram?a.w*15.4324:a.w;
+  document.getElementById('bw').value=useGrain?wGr.toFixed(2):(wGr*0.0648).toFixed(3);
+  document.getElementById('mv').value=a.v;
+  document.getElementById('bc').value=a.b;
+}
+
+function refSel(){
+  const s=document.getElementById('sa');
+  s.innerHTML='<option value="">— ვაზნა გვ-ზე დაამატე —</option>';
+  ammos.forEach((a,i)=>{
+    const o=document.createElement('option');
+    o.value=i;o.textContent=a.n+' · '+a.c;
+    s.appendChild(o);
+  });
+}
+
+function saveAmmo(){
+  const n=document.getElementById('an').value.trim();
+  const c=document.getElementById('acal').value.trim();
+  const w=parseFloat(document.getElementById('aw').value);
+  const v=parseFloat(document.getElementById('av').value);
+  const b=parseFloat(document.getElementById('ab').value)||0.2;
+  const t=document.getElementById('at').value;
+  if(!n||!c||!w||!v){alert('შეავსე: სახელი, კალიბრი, წონა, სიჩქარე');return;}
+  ammos.push({n,c,w,v,b,t});
+  refSel();renderAmmos();
+  ['an','acal','aw','av','ab'].forEach(id=>document.getElementById(id).value='');
+  alert('✅ ვაზნა შენახულია!');
+}
+
+function renderAmmos(){
+  const sec=document.getElementById('al-sec');
+  const list=document.getElementById('al');
+  if(!ammos.length){sec.style.display='none';return;}
+  sec.style.display='block';list.innerHTML='';
+  const tl={target:'სამიზნე',hunting:'სანადირო',fmj:'FMJ',pellet:'Pellet'};
+  ammos.forEach((a,i)=>{
+    const d=document.createElement('div');d.className='ai-item';
+    const wDisp=a.wGram?a.w+'გრ':a.w+'gr';
+    d.innerHTML='<div style="font-size:20px">🔸</div><div class="ai-info"><div class="ai-n">'+a.n+'</div><div class="ai-d">'+a.c+' · '+wDisp+' · '+a.v+'m/s · BC:'+a.b+' · '+(tl[a.t]||a.t)+'</div></div><button class="ai-del" onclick="delAmmo('+i+')" title="წაშლა"><i class="ti ti-trash"></i></button>';
+    list.appendChild(d);
+  });
+}
+
+function delAmmo(i){ammos.splice(i,1);refSel();renderAmmos();}
+
+function onFile(e){
+  const file=e.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    const url=ev.target.result;
+    document.getElementById('pi').src=url;
+    document.getElementById('pv').style.display='block';
+    analyzeImg(url);
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+}
+
+async function analyzeImg(dataUrl){
+  const sc=document.getElementById('sc');
+  const sr=document.getElementById('sr');
+  sc.style.display='block';
+  sr.textContent='ვაზნის ამოცნობა მიმდინარეობს...';
+  const b64=dataUrl.split(',')[1];
+  const mt=dataUrl.split(';')[0].split(':')[1]||'image/jpeg';
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-5-20251001',
+        max_tokens:500,
+        system:'შენ ხარ სამიზნე სროლის ექსპერტი. ფოტოდან ამოიცანი ვაზნა ან შეფუთვა. პასუხი ქართულად. პირველ სტრიქონზე მხოლოდ: ᲡᲐᲮᲔᲚᲘ:[სახელი]|ᲙᲐᲚᲘᲑᲠᲘ:[კალ]|ᲬᲝᲜᲐ:[grain]|ᲡᲘᲩᲥᲐᲠᲔ:[m/s]|BC:[რიცხვი] შემდეგ ახსენი.',
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:mt,data:b64}},
+          {type:'text',text:'ამოიცანი ვაზნა.'}
+        ]}]
+      })
+    });
+    const data=await resp.json();
+    const txt=data.content&&data.content[0]?data.content[0].text:'ამოცნობა ვერ მოხერხდა.';
+    sr.innerHTML=txt.replace(/\n/g,'<br>');
+    const f=txt.split('\n')[0];
+    const nm=f.match(/ᲡᲐᲮᲔᲚᲘ:([^|]+)/);
+    const cl=f.match(/ᲙᲐᲚᲘᲑᲠᲘ:([^|]+)/);
+    const wt=f.match(/ᲬᲝᲜᲐ:([\d.]+)/);
+    const vl=f.match(/ᲡᲘᲩᲥᲐᲠᲔ:([\d.]+)/);
+    const bc=f.match(/BC:([\d.]+)/);
+    if(nm)document.getElementById('an').value=nm[1].trim();
+    if(cl)document.getElementById('acal').value=cl[1].trim();
+    if(wt)document.getElementById('aw').value=wt[1];
+    if(vl)document.getElementById('av').value=vl[1];
+    if(bc)document.getElementById('ab').value=bc[1];
+    if(nm||cl)sr.innerHTML='<span style="color:#4ade80;font-weight:bold">✓ ველები ავტომ. შეივსო!</span><br><br>'+sr.innerHTML;
+  }catch(err){
+    sr.innerHTML='<span style="color:#f87171">შეცდომა: '+err.message+'</span><br>ხელით შეიყვანე პარამეტრები.';
+  }
+}
+
+function sim(v0,bc,massKg,A,rho,g,distM,scopeHm){
+  const dt=0.0005;
+  let x=0,y=-scopeHm,vx=v0,vy=0,t=0;
+  const maxT=distM/v0*10;
+  while(x<distM&&t<maxT){
+    const vm=Math.sqrt(vx*vx+vy*vy);
+    if(vm<0.1)break;
+    const Fd=0.5*rho*0.47*A*vm*vm;
+    const ax=-(Fd/massKg)*(vx/vm)*bc;
+    const ay=-g-(Fd/massKg)*(vy/vm)*bc;
+    vx+=ax*dt;vy+=ay*dt;
+    x+=vx*dt;y+=vy*dt;t+=dt;
+  }
+  return{drop:y,time:t};
+}
+
+function calc(){
+  const sk=document.getElementById('ss').value;
+  if(!sk){alert('ოპტიკა აირჩიე!');return;}
+  const w=getWeightGrain();
+  const v=parseFloat(document.getElementById('mv').value);
+  const bc=parseFloat(document.getElementById('bc').value);
+  const sh=parseFloat(document.getElementById('osh').value)||38;
+  const zd=parseFloat(document.getElementById('zd').value)||50;
+  const td=parseFloat(document.getElementById('td').value);
+  if(!w||!v||!bc){alert('ვაზნის პარამეტრები შეიყვანე!');return;}
+  if(!td){alert('სამიზნე მანძილი შეიყვანე!');return;}
+  const ws=parseFloat(document.getElementById('ws').value)||0;
+  const wa=parseFloat(document.getElementById('wa').value)||90;
+  const sc=SC[sk];
+  const gunKey=document.getElementById('sg').value;
+  const ammoIdx=document.getElementById('sa').value;
+
+  // შევამოწმოთ რეალური კალიბრაცია არსებობს თუ არა
+  const realClicks=gunKey&&ammoIdx!==''?getZeroInterp(gunKey,sk,parseInt(ammoIdx),zd,td):null;
+
+  let vClicks,vAbs,vDir,hint,usingReal=false;
+
+  if(realClicks!==null){
+    // რეალური მონაცემი
+    usingReal=true;
+    vClicks=Math.round(realClicks);
+    vAbs=Math.abs(vClicks);
+    vDir=vClicks>0?'ზემოთ':'ქვემოთ';
+    hint='✅ რეალური კალიბრაციის მონაცემი გამოიყენება — ინტერპოლაცია '+zd+'მ ზეროდან.';
+  }else{
+    // თეორიული გამოთვლა
+    const G=9.81,shM=sh/1000,wKg=w*0.0000648;
+    const A=Math.PI*Math.pow(0.00225,2),rho=1.225;
+    const sz=sim(v,bc,wKg,A,rho,G,zd,shM);
+    const st=sim(v,bc,wKg,A,rho,G,td,shM);
+    const dropDiffMm=(st.drop-sz.drop)*1000;
+    let clickSizeMm=sc.t==='MIL'?sc.c*td*1000*0.001:sc.c*(Math.PI/180/60)*td*1000;
+    vClicks=Math.round(dropDiffMm/clickSizeMm);
+    vAbs=Math.abs(vClicks);
+    vDir=vClicks>0?'ქვემოთ':'ზემოთ';
+    hint='⚠️ თეორიული გამოთვლა (კალიბრაცია არ არის). ';
+    if(td<zd)hint+='ახლო დ.: ტყვია ასწვდება. ';
+    else hint+=td+'მ-ზე '+Math.abs((st.drop-sz.drop)*1000).toFixed(0)+'მმ ვარდნა. ';
+  }
+
+  // ქარი
+  const G2=9.81,shM2=sh/1000,wKg2=w*0.0000648,A2=Math.PI*Math.pow(0.00225,2),rho2=1.225;
+  const st2=sim(v,bc,wKg2,A2,rho2,G2,td,shM2);
+  const sc2=SC[sk];
+  let clickSizeMm2=sc2.t==='MIL'?sc2.c*td*1000*0.001:sc2.c*(Math.PI/180/60)*td*1000;
+  const we=ws*Math.sin(wa*Math.PI/180);
+  const wDriftMm=0.5*we*(st2.time-td/v)*1000;
+  const hClicks=Math.round(wDriftMm/clickSizeMm2);
+  const hAbs=Math.abs(hClicks);
+  const hDir=hClicks>0?'მარჯვნივ':'მარცხნივ';
+  if(ws>0)hint+=' ქარი('+ws+'მ/წმ) '+Math.abs(wDriftMm).toFixed(0)+'მმ გადახრა.';
+
+  document.getElementById('res').style.display='block';
+  const gs=document.getElementById('sg');
+  const as=document.getElementById('sa');
+  const ammoTxt=as.value!==''&&ammos[as.value]?' · '+ammos[as.value].n:'';
+  document.getElementById('rs').innerHTML=
+    '<b style="color:var(--ac)">'+(gs.options[gs.selectedIndex]?gs.options[gs.selectedIndex].text:'—')+'</b>'+ammoTxt+'<br>'+
+    sc.n+'<br>ზ: <b>'+zd+'მ</b> → სამ: <b>'+td+'მ</b>'+(usingReal?' <span style="color:var(--gn);font-size:10px">● რეალური</span>':' <span style="color:var(--ac);font-size:10px">◌ თეორ.</span>');
+
+  const ve=document.getElementById('vc');
+  ve.textContent=vAbs===0?'0':(vDir==='ზემოთ'?'↑':'↓')+vAbs;
+  ve.className='rv '+(vAbs===0?'nt':vDir==='ზემოთ'?'up':'dn');
+  document.getElementById('vd').textContent=vAbs===0?'კორ. საჭ. არ არის':vDir+' · '+sc.c+sc.t+'/კლ.';
+
+  const he=document.getElementById('hc');
+  he.textContent=hAbs===0?'0':(hDir==='მარჯვნივ'?'→':'←')+hAbs;
+  he.className='rv nt';
+  document.getElementById('hd').textContent=hAbs===0?'ქარი არ მოქ.':hDir+' · '+sc.c+sc.t+'/კლ.';
+
+  document.getElementById('rh').innerHTML='<b style="color:var(--ac)">ანალიზი:</b> '+hint;
+}
+
+async function send(){
+  const inp=document.getElementById('ci');
+  const txt=inp.value.trim();if(!txt)return;inp.value='';
+  const area=document.getElementById('ca');
+  const ud=document.createElement('div');ud.className='ms u';ud.textContent=txt;area.appendChild(ud);
+  const ty=document.createElement('div');ty.className='ty';ty.innerHTML='<span></span><span></span><span></span>';
+  area.appendChild(ty);area.scrollTop=area.scrollHeight;
+  const ac=ammos.length?' ვაზნები: '+ammos.map(function(a){return a.n+'('+a.c+','+a.w+'gr,'+a.v+'m/s)';}).join('; '):'';
+  const sys='შენ ხარ სამიზნე სროლის ექსპერტი 10 წლიანი გამოცდილებით, სანადირო და სპორტული მიმართულებით. პასუხობ ქართულად, მოკლედ და კონკრეტულად. მომხმარებელს აქვს — იარაღები: Husan Arms MKA 556(5.56mm), Tikka T1X(.22LR), Snowpeak T-REX(4.5mm PCP). ოპტიკები: Discovery HD GEN II 5-30x56 FFP(0.1MIL), Discovery ED-LHT GEN II 3-15x50 FFP(0.1MIL), Vector Optics კოლ.'+ac;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-5-20251001',max_tokens:800,system:sys,messages:[{role:'user',content:txt}]})
+    });
+    const d=await r.json();
+    const rep=d.content&&d.content[0]?d.content[0].text:'პასუხი ვერ მივიღე.';
+    ty.remove();
+    const ad=document.createElement('div');ad.className='ms a';
+    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div>'+rep.replace(/\n/g,'<br>');
+    area.appendChild(ad);
+  }catch(err){
+    ty.remove();
+    const ad=document.createElement('div');ad.className='ms a';
+    ad.innerHTML='<div class="an">🎯 ბალისტიკის ექსპერტი</div><span style="color:#f87171">შეცდომა: '+err.message+'</span>';
+    area.appendChild(ad);
+  }
+  area.scrollTop=area.scrollHeight;
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+  refSel();
+  renderAmmos();
+  refZeroAmmo();
+  renderZeroList();
+  renderZPoints();
+});
+
+// ===== ZERO CALIBRATION =====
+let zeroData=[]; // [{key, gun, scope, ammo, zero, points:[{dist,clicks}]}]
+let zPoints=[{dist:'',clicks:''}];
+
+function refZeroAmmo(){
+  const s=document.getElementById('zcal-ammo');
+  s.innerHTML='<option value="">— აირჩიე —</option>';
+  ammos.forEach((a,i)=>{
+    const o=document.createElement('option');
+    o.value=i;o.textContent=a.n+' · '+a.c;
+    s.appendChild(o);
+  });
+}
+
+function addZPoint(){
+  zPoints.push({dist:'',clicks:''});
+  renderZPoints();
+}
+
+function renderZPoints(){
+  const c=document.getElementById('zpoints');
+  c.innerHTML='';
+  zPoints.forEach((p,i)=>{
+    const d=document.createElement('div');
+    d.style.cssText='display:grid;grid-template-columns:1fr 1fr 32px;gap:8px;margin-bottom:8px;align-items:end';
+    d.innerHTML=
+      '<div><div class="lbl">მანძილი (მ)</div><input type="number" placeholder="100" value="'+p.dist+'" oninput="zPoints['+i+'].dist=this.value" style="margin-bottom:0"></div>'+
+      '<div><div class="lbl">კლიკი (↑+/↓-)</div><input type="number" placeholder="22" value="'+p.clicks+'" oninput="zPoints['+i+'].clicks=this.value" style="margin-bottom:0"></div>'+
+      '<button onclick="removeZPoint('+i+')" style="background:none;border:1px solid var(--brd);border-radius:var(--r2);color:var(--tx3);cursor:pointer;padding:0;height:42px;font-size:16px">✕</button>';
+    c.appendChild(d);
+  });
+}
+
+function removeZPoint(i){
+  if(zPoints.length<=1)return;
+  zPoints.splice(i,1);
+  renderZPoints();
+}
+
+function saveZeroData(){
+  const gun=document.getElementById('zcal-gun').value;
+  const scope=document.getElementById('zcal-scope').value;
+  const ammoIdx=document.getElementById('zcal-ammo').value;
+  const zero=parseFloat(document.getElementById('zcal-zero').value)||50;
+  if(!gun||!scope||ammoIdx===''){alert('იარაღი, ოპტიკა და ვაზნა აირჩიე!');return;}
+  const pts=zPoints.filter(p=>p.dist!==''&&p.clicks!=='').map(p=>({dist:parseFloat(p.dist),clicks:parseFloat(p.clicks)}));
+  if(pts.length<1){alert('მინიმუმ 1 წერტილი შეიყვანე!');return;}
+  const key=gun+'-'+scope+'-'+ammoIdx+'-z'+zero;
+  const existing=zeroData.findIndex(z=>z.key===key);
+  const entry={key,gun,scope,ammoIdx:parseInt(ammoIdx),zero,points:pts};
+  if(existing>=0)zeroData[existing]=entry;
+  else zeroData.push(entry);
+  renderZeroList();
+  alert('✅ კალიბრაცია შენახულია! კალკულატორი ამ მონაცემებს გამოიყენებს.');
+}
+
+function renderZeroList(){
+  const sec=document.getElementById('zcal-saved');
+  const list=document.getElementById('zcal-list');
+  if(!zeroData.length){sec.style.display='none';return;}
+  sec.style.display='block';list.innerHTML='';
+  const gn={husan:'Husan MKA 556',tikka:'Tikka T1X',snow:'Snowpeak T-REX'};
+  const sn={hd:'HD 5-30x56',ed:'ED-LHT 3-15x50',vec:'კოლიმ.'};
+  zeroData.forEach((z,i)=>{
+    const an=ammos[z.ammoIdx]?ammos[z.ammoIdx].n:'—';
+    const ptsStr=z.points.map(p=>(p.clicks>0?'+':'')+p.clicks+'კლ@'+p.dist+'მ').join(' | ');
+    const d=document.createElement('div');
+    d.className='ai-item';
+    d.style.flexDirection='column';d.style.alignItems='flex-start';d.style.gap='6px';
+    d.innerHTML=
+      '<div style="display:flex;width:100%;align-items:center;justify-content:space-between">'+
+        '<div class="ai-n">'+(gn[z.gun]||z.gun)+' · '+(sn[z.scope]||z.scope)+'</div>'+
+        '<button class="ai-del" onclick="delZero('+i+')"><i class="ti ti-trash"></i></button>'+
+      '</div>'+
+      '<div class="ai-d">'+an+' · ზ:'+z.zero+'მ</div>'+
+      '<div style="font-size:10px;color:var(--ac)">'+ptsStr+'</div>';
+    list.appendChild(d);
+  });
+}
+
+function delZero(i){zeroData.splice(i,1);renderZeroList();}
+
+function getZeroInterp(gun,scope,ammoIdx,zeroDist,targetDist){
+  const key=gun+'-'+scope+'-'+ammoIdx+'-z'+zeroDist;
+  const z=zeroData.find(d=>d.key===key);
+  if(!z||z.points.length<1)return null;
+  const pts=[{dist:zeroDist,clicks:0},...z.points].sort((a,b)=>a.dist-b.dist);
+  if(targetDist<=pts[0].dist)return pts[0].clicks;
+  if(targetDist>=pts[pts.length-1].dist)return pts[pts.length-1].clicks;
+  for(let i=0;i<pts.length-1;i++){
+    if(targetDist>=pts[i].dist&&targetDist<=pts[i+1].dist){
+      const t=(targetDist-pts[i].dist)/(pts[i+1].dist-pts[i].dist);
+      return pts[i].clicks+t*(pts[i+1].clicks-pts[i].clicks);
+    }
+  }
+  return null;
+}
+</script>
+</body>
+</html>
