@@ -372,6 +372,7 @@ function saveGun(){
   guns.push({id,name,cal,type});
   renderGunsList();
   refreshGunSelects();
+  saveToStorage();
   document.getElementById('gun-name').value='';
   document.getElementById('gun-cal').value='';
   alert('✅ იარაღი დაემატა!');
@@ -379,7 +380,7 @@ function saveGun(){
 
 function delGun(i){
   if(i<3){alert('საბაზისო იარაღის წაშლა არ შეიძლება');return;}
-  guns.splice(i,1);renderGunsList();refreshGunSelects();
+  guns.splice(i,1);renderGunsList();refreshGunSelects();saveToStorage();
 }
 
 function refreshGunSelects(){
@@ -414,13 +415,14 @@ function saveOpt(){
   const id='opt_'+Date.now();
   opts.push({id,name,clickType:ct,clickVal:cv,type:ot,height:h});
   renderOptsList();refreshOptSelects();
+  saveToStorage();
   document.getElementById('opt-name').value='';
   alert('✅ ოპტიკა დაემატა!');
 }
 
 function delOpt(i){
   if(i<3){alert('საბაზისო ოპტიკის წაშლა არ შეიძლება');return;}
-  opts.splice(i,1);renderOptsList();refreshOptSelects();
+  opts.splice(i,1);renderOptsList();refreshOptSelects();saveToStorage();
 }
 
 function refreshOptSelects(){
@@ -538,6 +540,7 @@ function saveAmmo(){
   if(!n||!c||!w||!v){alert('შეავსე: სახელი, კალიბრი, წონა, სიჩქარე');return;}
   ammos.push({n,c,w,v,b,t});
   refSel();renderAmmos();
+  saveToStorage();
   ['an','acal','aw','av','ab'].forEach(id=>document.getElementById(id).value='');
   alert('✅ ვაზნა შენახულია!');
 }
@@ -556,7 +559,7 @@ function renderAmmos(){
   });
 }
 
-function delAmmo(i){ammos.splice(i,1);refSel();renderAmmos();}
+function delAmmo(i){ammos.splice(i,1);refSel();renderAmmos();saveToStorage();}
 
 function onFile(e){
   const file=e.target.files[0];
@@ -781,7 +784,30 @@ async function send(){
   area.scrollTop=area.scrollHeight;
 }
 
+function saveToStorage(){
+  try{
+    localStorage.setItem('bp_guns',JSON.stringify(guns));
+    localStorage.setItem('bp_opts',JSON.stringify(opts));
+    localStorage.setItem('bp_ammos',JSON.stringify(ammos));
+    localStorage.setItem('bp_zero',JSON.stringify(zeroData));
+  }catch(e){}
+}
+
+function loadFromStorage(){
+  try{
+    var g=localStorage.getItem('bp_guns');
+    var o=localStorage.getItem('bp_opts');
+    var a=localStorage.getItem('bp_ammos');
+    var z=localStorage.getItem('bp_zero');
+    if(g)guns=JSON.parse(g);
+    if(o)opts=JSON.parse(o);
+    if(a)ammos=JSON.parse(a);
+    if(z)zeroData=JSON.parse(z);
+  }catch(e){}
+}
+
 window.addEventListener('DOMContentLoaded',function(){
+  loadFromStorage();
   refreshGunSelects();
   refreshOptSelects();
   renderGunsList();
@@ -846,6 +872,7 @@ function saveZeroData(){
   if(existing>=0)zeroData[existing]=entry;
   else zeroData.push(entry);
   renderZeroList();
+  saveToStorage();
   alert('✅ კალიბრაცია შენახულია! კალკულატორი ამ მონაცემებს გამოიყენებს.');
 }
 
@@ -873,7 +900,7 @@ function renderZeroList(){
   });
 }
 
-function delZero(i){zeroData.splice(i,1);renderZeroList();}
+function delZero(i){zeroData.splice(i,1);renderZeroList();saveToStorage();}
 
 function getZeroInterp(gun,scope,ammoIdx,zeroDist,targetDist){
   const key=gun+'-'+scope+'-'+ammoIdx+'-z'+zeroDist;
