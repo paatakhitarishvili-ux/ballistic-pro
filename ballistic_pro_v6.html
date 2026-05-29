@@ -358,7 +358,7 @@ function renderGunsList(){
     const d=document.createElement('div');d.className='ic';
     d.innerHTML='<div class="ii ig">'+(icons[g.type]||'🔫')+'</div>'+
       '<div style="flex:1"><div class="in-n">'+g.name+'</div><div class="in-d">'+g.cal+' · '+g.type+'</div></div>'+
-      (i>=3?'<button class="ai-del" onclick="delGun('+i+')"><i class="ti ti-trash"></i></button>':'');
+      '<button class="ai-del" onclick="delGun('+i+')" title="წაშლა"><i class="ti ti-trash"></i></button>';
     list.appendChild(d);
   });
 }
@@ -379,7 +379,7 @@ function saveGun(){
 }
 
 function delGun(i){
-  if(i<3){alert('საბაზისო იარაღის წაშლა არ შეიძლება');return;}
+  if(!confirm(guns[i].name+' — წაშლა დარწმუნებული ხარ?'))return;
   guns.splice(i,1);renderGunsList();refreshGunSelects();saveToStorage();
 }
 
@@ -400,7 +400,7 @@ function renderOptsList(){
     const d=document.createElement('div');d.className='ic';
     d.innerHTML='<div class="ii is">'+(o.type==='Red Dot'?'🔴':'🔭')+'</div>'+
       '<div style="flex:1"><div class="in-n">'+o.name+'</div><div class="in-d">'+o.type+' · '+o.clickType+' · '+o.clickVal+'/კლ · '+o.height+'მმ</div></div>'+
-      (i>=3?'<button class="ai-del" onclick="delOpt('+i+')"><i class="ti ti-trash"></i></button>':'');
+      '<button class="ai-del" onclick="delOpt('+i+')" title="წაშლა"><i class="ti ti-trash"></i></button>';
     list.appendChild(d);
   });
 }
@@ -421,7 +421,7 @@ function saveOpt(){
 }
 
 function delOpt(i){
-  if(i<3){alert('საბაზისო ოპტიკის წაშლა არ შეიძლება');return;}
+  if(!confirm(opts[i].name+' — წაშლა დარწმუნებული ხარ?'))return;
   opts.splice(i,1);renderOptsList();refreshOptSelects();saveToStorage();
 }
 
